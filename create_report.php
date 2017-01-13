@@ -10,7 +10,6 @@ $jsonArray = json_decode($jsonEncoded);
 
 //現在時刻を取得
 $date = date('Y-m-d H:i:s');
-error_log(serialize($jsonArray));
 
 $report_prms = array(
     ':id_job' => $jsonArray->id_job,
@@ -23,8 +22,6 @@ $report_prms = array(
 
 $stmt = $pdo -> prepare('INSERT INTO Report (id_job, id_keli, id_user, comment, image, created) VALUES(:id_job, :id_keli, :id_user, :comment, :image, :created)');
 $stmt -> execute($report_prms);
-$id_job = $pdo->lastInsertId();
 $stmt->closeCursor();
-
 
 ?>

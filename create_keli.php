@@ -10,7 +10,6 @@ $jsonArray = json_decode($jsonEncoded);
 
 //現在時刻を取得
 $date = date('Y-m-d H:i:s');
-error_log(serialize($jsonArray));
 
 $keli_prms = array(
 
@@ -20,9 +19,6 @@ $keli_prms = array(
     ':created' => $date,
 
 );
-
-file_put_contents('keli_array.txt', serialize($keli_prms));
-print_r($keli_prms);
 
 $stmt = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created) VALUES (:id_job, :keli_from_userid, :keli_to_userid, :created)');
 $stmt -> execute($keli_prms);
