@@ -60,7 +60,7 @@ $result_data = array();
 
 foreach($allJobs as $row){
 
-    //0000-00-00 00:00:00となることはないようにする
+    //0000-00-00 00:00:00となることはないようにデータをinsertすること
     if($row['modified'] > $newest_modified && $row['modified']!= "0000-00-00 00:00:00"){
 
         $row_array["id_job"] = $row["id_job"];
