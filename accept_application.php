@@ -24,8 +24,8 @@ $stmt->closeCursor();
 
 //自分の側からRelationを作成する
 $accept_prms = array(
-    'id_user' => $id_friend,
-    'id_friend' => $id_user,
+    'id_user' => $id_user,
+    'id_friend' => $id_friend,
     ':applying' => $applying,
     ':created' => $date,
     ':modified' => $date,
