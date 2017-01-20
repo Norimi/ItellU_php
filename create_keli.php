@@ -17,10 +17,11 @@ $keli_prms = array(
     ':keli_from_userid' => $jsonArray->keli_from_userid,
     ':keli_to_userid' => $jsonArray->keli_to_userid,
     ':created' => $date,
+    ':modified' => $date,
 
 );
 
-$stmt = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created) VALUES (:id_job, :keli_from_userid, :keli_to_userid, :created)');
+$stmt = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created, modified) VALUES (:id_job, :keli_from_userid, :keli_to_userid, :created, :modified)');
 $stmt -> execute($keli_prms);
 $id_keli = $pdo -> lastInsertId();
 $stmt -> closeCursor();
@@ -31,11 +32,12 @@ $comment_prms = array(
     ':id_keli' => $id_keli,
     ':comment' => $jsonArray->comment,
     ':created' => $date,
+    ':modified' => $modified,
 );
 
 print_r($comment_prms);
 
-$stmt2 = $pdo->prepare('INSERT INTO Comments (id_user, id_keli, comment, created) VALUES (:id_user, :id_keli, :comment, :created)');
+$stmt2 = $pdo->prepare('INSERT INTO Comments (id_user, id_keli, comment, created, modified) VALUES (:id_user, :id_keli, :comment, :created, :modified)');
 $stmt2 -> execute($comment_prms);
 $stmt2 -> closeCursor();
 

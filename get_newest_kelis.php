@@ -33,11 +33,11 @@ $ids_kelis_from_group = array_column($all, 'id_keli');
 $stmt = $pdo->prepare("SELECT id_keli FROM Keli WHERE keli_from_userid = '$uid'");
 $stmt->execute();
 $all = $stmt->fetchAll();
-$id_keli_from_group = array_column($all, 'id_keli');
-//print_r($id_keli_from_group);
+$id_keli_from_user_id = array_column($all, 'id_keli');
+//print_r($id_keli_from_user_id);
 
 //そのKeliが関連しているすべてのJOBを取得
-$stmt = $pdo->prepare('SELECT id_job FROM Keli WHERE id_keli IN("'.implode('","', $id_keli_from_group).'")');
+$stmt = $pdo->prepare('SELECT id_job FROM Keli WHERE id_keli IN("'.implode('","', $id_keli_from_user_id).'")');
 $stmt->execute();
 $all = $stmt->fetchAll();
 $id_jobs_from_user_keli = array_column($all, 'id_job');
@@ -60,29 +60,18 @@ $stmt->execute();
 $all = $stmt->fetchAll();
 $id_kelis_from_receiver = array_column($all, 'id_keli');
 
-//$id_keli_from_group , $id_jobs_from_user_keli, $id_kelis_from_receiverを統合する
-$result_kelis = array_merge($id_keli_from_group, $id_jobs_from_user_keli, $id_kelis_from_receiver);
-
+//$ids_kelis_from_group,$id_keli_from_user_id,$id_kelis_from_user_keli,$id_kelis_from_receiverを統合
+$result_kelis = array_merge($ids_kelis_from_group, $id_keli_from_user_id, $id_kelis_from_user_keli, $id_kelis_from_receiver);
+//print_r($result_kelis);
 //全keliidからKeliを取得する
 $stmt = $pdo->prepare('SELECT * FROM Keli WHERE id_keli IN("'.implode('","', $result_kelis).'") ORDER BY modified DESC');
 $stmt->execute();
-$allKelis = $stmt->fetchAll();
-
-$newest_remote_modified = $allKelis[0]['modified'];
-//echo($newest_modified);
-//echo($newest_remote_modified);
-if($newest_modified == $newest_remote_modified){
-    //最新が更新されていない場合
-    //何もせず抜ける
-    return;
-}
-
 
 //結果からKeliのデータを得る
 $keli_data = array();
-foreach($allKelis as $row){
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
-    if($row['modified'] > $newest_modified && $row['modified']!= "0000-00-00 00:00:00"){
+    if($row['modified'] > $newest_modified){
 
         $row_array['id_keli'] = $row['id_keli'];
         $row_array['id_job'] = $row['id_job'];
@@ -91,9 +80,9 @@ foreach($allKelis as $row){
         $row_array['created'] = $row['created'];
         $row_array['modified'] = $row['modified'];
         $row_array['accepted'] = $row['accepted'];
-
-        array_push($keli_data, $row_array);
     }
+
+    array_push($keli_data, $row_array);
 
 }
 

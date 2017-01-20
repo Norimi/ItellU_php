@@ -18,11 +18,12 @@
         ':title' => $jsonArray->title,
         ':description' => $jsonArray->job_description,
         ':created' => $date,
+        ':modified' => $date,
     );
 
     //error_log(serialize($parameters));
 
-    $stmt = $pdo -> prepare('INSERT INTO Job (id_user, title, job_description, created) VALUES(:id_user, :title, :description, :created)');
+    $stmt = $pdo -> prepare('INSERT INTO Job (id_user, title, job_description, created, modified) VALUES(:id_user, :title, :description, :created, :modified)');
     $stmt -> execute($job_prms);
     $id_job = $pdo->lastInsertId();
     $stmt->closeCursor();
@@ -34,11 +35,12 @@
         ':id_user' => $jsonArray->id_user,
         ':id_friend' => $jsonArray->id_friend,
      //   ':id_group' => $jsonArray->id_group,
-        ':created' => $date
+        ':created' => $date,
+        ':modified' => $date,
 
     );
 
-    $stmt2 = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created) VALUES(:id_job, :id_user, :id_friend, :created)');
+    $stmt2 = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created, modified) VALUES(:id_job, :id_user, :id_friend, :created, :modified)');
     $stmt2 -> execute($keli_prms);
     $id_keli = $pdo -> lastInsertId();
     $stmt2 -> closeCursor();
@@ -48,11 +50,12 @@
         ':id_keli' => $id_keli,
         ':id_user' => $jsonArray->id_user,
         ':comment' => $jsonArray->comment,
-        ':date' => $date,
+        ':created' => $date,
+        ':modified' => $date,
 
     );
 
-    $stmt3 = $pdo -> prepare('INSERT INTO Comments (id_keli, id_user, comment, created) VALUES (:id_keli, :id_user, :comment, :date)');
+    $stmt3 = $pdo -> prepare('INSERT INTO Comments (id_keli, id_user, comment, created, modified) VALUES (:id_keli, :id_user, :comment, :created, :modified)');
     $stmt3 -> execute($comments_prms);
     $stmt3 -> closeCursor();
 
