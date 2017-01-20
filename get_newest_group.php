@@ -9,22 +9,22 @@ $uid = $jsonArray['uid'];
 $newest_modified = $jsonArray['modified'];
 $applying = false;
 
-$stmt = $pdo->prepare("SELECT id_friend, modified FROM Relation WHERE id_user = '$uid' AND applying = '$applying' AND id_group = 0 AND modified > '$newest_modified' ORDER BY modified DESC");
+$stmt = $pdo->prepare("SELECT id_group, modified FROM Relation WHERE id_user = '$uid' AND applying = '$applying' AND id_friend = 0 AND modified > '$newest_modified' ORDER BY modified DESC");
 $stmt->execute();
 $all = $stmt->fetchAll();
-$friend_ids = array_column($all, 'id_friend');
+$group_ids = array_column($all, 'id_group');
+print_r($group_ids);
 $remote_modified = $all[0]['modified'];
 
-$stmt = $pdo->prepare('SELECT * FROM User WHERE id_user IN("'.implode('","', $friend_ids).'")');
-$stmt->execute();
+$stmt2 = $pdo->prepare('SELECT * FROM Groups WHERE id_group IN("'.implode('","', $group_ids).'")');
+$stmt2->execute();
 
 $result_data = array();
-while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+while($row = $stmt2->fetch(PDO::FETCH_ASSOC)){
 
-    $row_array['id_user'] = $row['id_user'];
+    $row_array['id_group'] = $row['id_group'];
     $row_array['name'] = $row['name'];
-    $row_array['email'] = $row['email'];
-    $row_array['photoURL'] = $row['photoURL'];
+    $row_array['description'] = $row['description'];
     $row_array['created'] = $row['created'];
     $row_array['modified'] = $row['modified'];
 
