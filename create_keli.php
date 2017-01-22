@@ -11,20 +11,38 @@ $jsonArray = json_decode($jsonEncoded);
 //現在時刻を取得
 $date = date('Y-m-d H:i:s');
 
+//POSTされるデータによって友達とグループを分ける
+//友達に蹴る時:keli_to_groupidが 0
+//グループに蹴る時:keli_to_useridが ""
+
 $keli_prms = array(
 
     ':id_job' => $jsonArray->id_job,
     ':keli_from_userid' => $jsonArray->keli_from_userid,
     ':keli_to_userid' => $jsonArray->keli_to_userid,
+    ':keli_to_groupid' => $jsonArray->keli_to_groupid,
+    ':id_keli_before' => $jsonArray->id_keli_before,
     ':created' => $date,
     ':modified' => $date,
 
 );
 
-$stmt = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, created, modified) VALUES (:id_job, :keli_from_userid, :keli_to_userid, :created, :modified)');
+$stmt = $pdo -> prepare('INSERT INTO Keli (id_job, keli_from_userid, keli_to_userid, keli_to_groupid, id_keli_before, created, modified) VALUES (:id_job, :keli_from_userid, :keli_to_userid, :keli_to_groupid, :id_keli_before, :created, :modified)');
 $stmt -> execute($keli_prms);
 $id_keli = $pdo -> lastInsertId();
 $stmt -> closeCursor();
+
+//グループにけられた時点でグループのjobとなり、Jobのデータにid_groupが入る
+$job_prms = array(
+    ':id_group' => $jsonArray->keli_to_groupid,
+    ':modified' => $date,
+    ':id_job' => $jsonArray->id_job,
+);
+
+//蹴られたJobをグループのJobとする->get_newest_kelisで検出される
+$stmt3 = $pdo -> prepare('UPDATE Job SET id_group = :id_group, modified = :modified WHERE id_job = :id_job');
+$stmt3 -> execute($job_prms);
+$stmt3 -> closeCursor();
 
 $comment_prms = array(
 
@@ -32,10 +50,8 @@ $comment_prms = array(
     ':id_keli' => $id_keli,
     ':comment' => $jsonArray->comment,
     ':created' => $date,
-    ':modified' => $modified,
+    ':modified' => $date,
 );
-
-print_r($comment_prms);
 
 $stmt2 = $pdo->prepare('INSERT INTO Comments (id_user, id_keli, comment, created, modified) VALUES (:id_user, :id_keli, :comment, :created, :modified)');
 $stmt2 -> execute($comment_prms);
