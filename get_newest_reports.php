@@ -27,6 +27,7 @@ if($newest_modified == $newest_remote_modified){
     return;
 }
 
+$result_data = array();
 foreach($allReports as $row){
 
     if($row['modified'] > $newest_modified && $row['modified']!= "0000-00-00 00:00:00"){

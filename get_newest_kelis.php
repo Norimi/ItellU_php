@@ -88,6 +88,25 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
 }
 
-echo json_encode(array_values($keli_data));
+//result_kelisを参照してcommentを取得する
+$stmt2 = $pdo->prepare('SELECT * FROM Comments WHERE id_keli IN("'.implode('","', $result_kelis).'") ORDER BY modified DESC');
+$stmt2->execute();
+
+$comments_data = array();
+while($row = $stmt2->fetch(PDO::FETCH_ASSOC)) {
+
+    $row_array['id_comment'] = $row['id_comment'];
+    $row_array['id_user'] = $row['id_user'];
+    $row_array['id_keli'] = $row['id_keli'];
+    $row_array['comment'] = $row['comment'];
+    $row_array['created'] = $row['created'];
+    $row_array['modified'] = $row['modified'];
+
+    array_push($comments_data, $row_array);
+}
+
+//keliとcommentsを配列にする
+$all_result = array($keli_data, $comments_data);
+echo json_encode(array_values($all_result));
 
 ?>
