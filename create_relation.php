@@ -7,16 +7,20 @@ header("Content-Type: application/json; charset=utf-8");
 $jsonString = file_get_contents('php://input');
 $jsonEncoded = mb_convert_encoding($jsonString, 'UTF8','ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
 $decodedData = json_decode($jsonEncoded);
+$decodedDataArr = json_decode($jsonEncoded, true);
 
 $date = date('Y-m-d H:i:s');
 
 //groupとfriendの関係作成時に共有中
-//group申請のときはid_friendが0のデータが送信され
+//group申請のときはid_friendが0(String)のデータが送信され
 //friend申請のときはid_groupが0のデータが送信される
 
 //申請中フラグ:受諾されればfalseとなる(accept_application.php)
 //group招待時と共有のため場合分け
-if($decodedData['id_friend'] > 0){
+if($decodedDataArr['id_group'] > 0){
+    $applying = false;
+} else {
+    //友達申請の場合は0が送信される
     $applying = true;
 }
 

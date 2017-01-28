@@ -64,6 +64,7 @@ foreach($allJobs as $row){
     if($row['modified'] > $newest_modified && $row['modified']!= "0000-00-00 00:00:00"){
 
         $row_array["id_job"] = $row["id_job"];
+        $row_array["id_user"] = $row["id_user"];
         $row_array["id_group"] = $row["id_group"];
         $row_array["title"] = $row["title"];
         $row_array["job_description"] = $row["job_description"];
