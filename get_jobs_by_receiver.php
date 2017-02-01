@@ -11,9 +11,9 @@ $jsonEncoded = mb_convert_encoding($jsonString, 'UTF8','ASCII,JIS,UTF-8,EUC-JP,S
 $jsonArray = json_decode($jsonEncoded, true);
 $uid = $jsonArray['id_receiver'];
 
-$stmt = $pdo->prepare("SELECT * FROM Job WHERE receiver_id_user = '$uid'");
+$stmt = $pdo->prepare("SELECT * FROM Job WHERE receiver_id_user = '$uid' AND done = false");
 $stmt->execute();
-$result_data = array();
+$doing_job_data = array();
 
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
@@ -26,10 +26,29 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $row_array["done"] = $row["done"];
     $row_array["receiver_id_user"] = $row["receiver_id_user"];
 
-    array_push($result_data, $row_array);
+    array_push($doing_job_data, $row_array);
 
 }
 
-echo json_encode(array_values($result_data));
+$stmt = $pdo->prepare("SELECT * FROM Job WHERE receiver_id_user = '$uid' AND done = true");
+$stmt->execute();
+$done_job_data = array();
+
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+
+    $row_array["id_job"] = $row["id_job"];
+    $row_array["id_group"] = $row["id_group"];
+    $row_array["title"] = $row["title"];
+    $row_array["job_description"] = $row["job_description"];
+    $row_array["modified"] = $row["modified"];
+    $row_array["created"] = $row["created"];
+    $row_array["done"] = $row["done"];
+    $row_array["receiver_id_user"] = $row["receiver_id_user"];
+
+    array_push($done_job_data, $row_array);
+
+}
+$result_array = array($doing_job_data, $done_job_data);
+echo json_encode(array_values($result_array));
 
 ?>

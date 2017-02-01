@@ -6,15 +6,7 @@ $jsonEncoded = mb_convert_encoding($jsonString, 'UTF8','ASCII,JIS,UTF-8,EUC-JP,S
 $jsonArray = json_decode($jsonEncoded, true);
 
 $uid = $jsonArray['uid'];
-
-//Friendテーブルから友達の配列を得る
-$stmt = $pdo->prepare("SELECT id_friend FROM Friend WHERE id_user = '$uid' ORDER BY created ASC");
-$stmt->execute();
-$all = $stmt->fetchAll();
-//print_r($all);
-
-$id_friends = array_column($all, 'id_friend');
-$stmt = $pdo->prepare('SELECT * FROM User WHERE id_user IN("'.implode('","', $id_friends).'")');
+$stmt = $pdo->prepare("SELECT * FROM User WHERE id_user = '$uid'");
 $stmt->execute();
 
 $friends_data = array();
@@ -25,6 +17,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         $row_array['photoURL'] = $row['photoURL'];
         $row_array['created'] = $row['created'];
         $row_array['email'] = $row['email'];
+        $row_array['modified'] = $row['modified'];
 
         array_push($friends_data, $row_array);
 

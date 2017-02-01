@@ -34,6 +34,7 @@ $stmt->execute($keli_prms);
 $id_keli = $pdo->lastInsertId();
 //ここで取得されたid_keliをReportに入れる
 
+
 $report_prms = array(
 
     ':id_job' => $jsonArray->id_job,
@@ -46,8 +47,8 @@ $report_prms = array(
     ':image' => $jsonArray->image,
 );
 
-$stmt = $pdo->prepare('INSERT INTO Report (id_job, id_keli, id_user, comment, done, created, modified, image) VALUES (:id_job, :id_keli, :id_user, :comment, :done, :created, :modified, :image)');
-$stmt->execute($report_prms);
+$stmt3 = $pdo->prepare('INSERT INTO Report (id_job, id_keli, id_user, comment, done, created, modified, image) VALUES (:id_job, :id_keli, :id_user, :comment, :done, :created, :modified, :image)');
+$stmt3->execute($report_prms);
 $id_report = $pdo->lastInsertId();
 
 //該当id_jobのreceiver_id_userにid_userを入れる

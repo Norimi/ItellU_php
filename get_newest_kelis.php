@@ -12,22 +12,26 @@ $uid = $jsonArray['uid'];
 $newest_modified = $jsonArray['modified'];
 
 //所属するグループを検索する
-$stmt = $pdo->prepare("SELECT id_group FROM Relation WHERE id_user = '$uid'");
+$stmt = $pdo->prepare("SELECT id_group FROM Relation WHERE id_user = '$uid' AND id_group > 0");
 $stmt->execute();
 $all = $stmt->fetchAll();
 $ids_group = array_column($all, 'id_group');
+//print_r($ids_group);
+//結果が0のときに、以下検索でids_group = 0を検出してしまう
 
 //グループが持っているJobを検索する
-$stmt2 = $pdo->prepare('SELECT id_job FROM Job WHERE id_group IN("'.implode('","', $ids_group).'")');
+$stmt2 = $pdo->prepare('SELECT id_job FROM Job WHERE id_group > 0 AND id_group IN("'.implode('","', $ids_group).'")');
 $stmt2->execute();
 $all = $stmt2->fetchAll();
 $ids_job_from_group = array_column($all, 'id_job');
+//print_r($ids_job_from_group);
 
 //JOBの配列からKeliを検索
 $stmt = $pdo->prepare('SELECT id_keli FROM Keli WHERE id_job IN("'.implode('","', $ids_job_from_group).'")');
 $stmt->execute();
 $all = $stmt->fetchAll();
 $ids_kelis_from_group = array_column($all, 'id_keli');
+//print_r($ids_kelis_from_group);
 
 //一度でも蹴ったことのあるKeliを全て取得
 $stmt = $pdo->prepare("SELECT id_keli FROM Keli WHERE keli_from_userid = '$uid'");
@@ -47,21 +51,31 @@ $stmt = $pdo->prepare('SELECT id_keli FROM Keli WHERE id_job IN("'.implode('","'
 $stmt->execute();
 $all = $stmt->fetchAll();
 $id_kelis_from_user_keli = array_column($all, 'id_keli');
+//print_r($id_kelis_from_user_keli);
+
+//keli_to_useridが自分のkeliを検索
+$stmt = $pdo->prepare("SELECT id_keli FROM Keli WHERE keli_to_userid = '$uid'");
+$stmt->execute();
+$all = $stmt->fetchAll();
+$id_keli_from_kelito_id = array_column($all, 'id_keli');
 
 //receiver_id_userが自分のJobを検索
 $stmt = $pdo->prepare("SELECT id_job FROM Job WHERE receiver_id_user = '$uid'");
 $stmt->execute();
 $all = $stmt->fetchAll();
 $jobs_from_receiver = array_column($all, 'id_job');
+//print_r("id_jobs_from_receiver");
+//print_r($jobs_from_receiver);
 
 //receiver_id_userが自分のJobに紐づく全Keliを取得
 $stmt = $pdo->prepare('SELECT id_keli FROM Keli WHERE id_job IN("'.implode('","', $jobs_from_receiver).'")');
 $stmt->execute();
 $all = $stmt->fetchAll();
 $id_kelis_from_receiver = array_column($all, 'id_keli');
+//print_r($id_kelis_from_receiver);
 
 //$ids_kelis_from_group,$id_keli_from_user_id,$id_kelis_from_user_keli,$id_kelis_from_receiverを統合
-$result_kelis = array_merge($ids_kelis_from_group, $id_keli_from_user_id, $id_kelis_from_user_keli, $id_kelis_from_receiver);
+$result_kelis = array_merge($ids_kelis_from_group, $id_keli_from_user_id, $id_keli_from_kelito_id, $id_kelis_from_user_keli, $id_kelis_from_receiver);
 //print_r($result_kelis);
 //全keliidからKeliを取得する
 $stmt = $pdo->prepare('SELECT * FROM Keli WHERE id_keli IN("'.implode('","', $result_kelis).'") ORDER BY modified DESC');
